@@ -13,6 +13,13 @@
 #SBATCH --output=slurm-logs/%j.out
 #SBATCH --error=slurm-logs/%j.err
 
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 PACKAGE" >&2
+    echo >&2
+    echo "example: $0 deduplicated/eng_Latn/1" >&2
+    exit 1
+fi
+
 # If run without sbatch, invoke here
 if [ -z $SLURM_JOB_ID ]; then
     sbatch "$0" "$@"
@@ -22,13 +29,6 @@ fi
 set -euo pipefail
 
 source common.sh
-
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 PACKAGE" >&2
-    echo >&2
-    echo "example: $0 cleaned/eng_Latn/1" >&2
-    exit 1
-fi
 
 PACKAGE="$1"
 get_lock "$PACKAGE"
