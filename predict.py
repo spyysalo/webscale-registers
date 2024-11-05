@@ -1,5 +1,6 @@
 import sys
 import time
+import json
 
 from argparse import ArgumentParser
 from functools import wraps
@@ -88,7 +89,7 @@ def predict(pipe, dataset, args):
     for i, o in enumerate(output, start=1):
         if i % 10000 == 0:
             print(f'predicted {i} ...', file=sys.stderr)
-        print(format_output(ids.pop(0), o))
+        print(json.dumps(format_output(ids.pop(0), o)))
     print(f'done, predicted {i}.', file=sys.stderr)
 
 
