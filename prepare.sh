@@ -9,7 +9,7 @@ source common.sh
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 PACKAGE" >&2
     echo >&2
-    echo "example: $0 cleaned/eng_Latn/1.jsonl.zst" >&2
+    echo "example: $0 deduplicated/eng_Latn/1.jsonl.zst" >&2
     exit 1
 fi
 

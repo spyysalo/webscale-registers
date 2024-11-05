@@ -5,6 +5,7 @@ BASE_URL="https://data.hplt-project.org/two"
 DOWNLOAD_BASE_DIR="downloads"
 STATS_BASE_DIR="stats"
 SPLIT_BASE_DIR="splits"
+PREDICT_BASE_DIR="predictions"
 LOCK_DIR="locks"
 LOG_BASE_DIR="logs"
 
