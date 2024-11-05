@@ -67,16 +67,29 @@ def make_pipeline(model, tokenizer):
 
 @timed
 def predict(pipe, dataset, args):
+    ids = []    # pass ID around pipeline
     def iter_text(data):
         for d in data:
+            ids.append(d['id'])
             yield d['text']
+
+    def format_output(id_, label_scores):
+        return {
+            'id': id_,
+            'register_probabilities': {
+                i['label']: round(i['score'], 4) for i in label_scores
+            },
+        }
 
     output =  pipe(
         iter_text(dataset),
         batch_size=args.batch_size,
     )
-    for out in output:
-        print(out)
+    for i, o in enumerate(output, start=1):
+        if i % 10000 == 0:
+            print(f'predicted {i} ...', file=sys.stderr)
+        print(format_output(ids.pop(0), o))
+    print(f'done, predicted {i}.', file=sys.stderr)
 
 
 def main(argv):
