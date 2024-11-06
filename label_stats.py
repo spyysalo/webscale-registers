@@ -82,17 +82,17 @@ def main(argv):
     # entry so that 2nd-level counts add up to top-level count
     for p in TOP_LEVEL_LABELS:
         parent_total = stats.get((p, None), 0)
-        if parent_total and LABEL_HIERARCHY[p]:
+        if parent_total: # and LABEL_HIERARCHY[p]:
             child_total = sum(stats.get((p, c), 0) for c in LABEL_HIERARCHY[p])
             stats[(p, '{other}')] = parent_total - child_total
 
     def label_string(k):
         if k is NO_LABEL:
-            return '{no register}'
+            return 'no register'
         elif k[1] is None:
             return k[0]
         else:
-            return f'    {k[0]}, {k[1]}'
+            return f'    {k[0]}, {k[1].strip("{}")}'
 
     keyf = lambda k: (k[0] or '~', k[1] or '')    # sort order for None
     for k in sorted(stats.keys(), key=keyf):
