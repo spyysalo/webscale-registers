@@ -44,7 +44,7 @@ def argparser():
 def assign_labels(probabilities, threshold):
     labels = set()
     for label, prob in probabilities.items():
-        if prob > threshold:
+        if prob >= threshold:
             labels.add(label)
             if label in LABEL_PARENT:
                 # assure that parent also included
