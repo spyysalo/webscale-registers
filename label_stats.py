@@ -97,7 +97,7 @@ def main(argv):
     keyf = lambda k: (k[0] or '~', k[1] or '')    # sort order for None
     for k in sorted(stats.keys(), key=keyf):
         print(f'{label_string(k)}: {stats[k]} ({stats[k]/total:.1%})')
-
+    print(f'TOTAL: {total}')
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
