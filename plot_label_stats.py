@@ -40,6 +40,8 @@ COLOR_MAP = {
 
 def argparser():
     ap = ArgumentParser()
+    ap.add_argument('--title')
+    ap.add_argument('--save')
     ap.add_argument('stats')
     return ap
 
@@ -123,7 +125,13 @@ def main(argv):
 
     add_labels(ax, inner_wedges, inner_labels, 0.5)
 
-    plt.show()
+    if args.title is not None:
+        plt.title(args.title)
+
+    if args.save is None:
+        plt.show()
+    else:
+        plt.savefig(args.save)
 
 
 if __name__ == '__main__':
