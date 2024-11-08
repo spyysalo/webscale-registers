@@ -19,7 +19,19 @@ TOTAL_RE = re.compile(r'^TOTAL: ([0-9]+)')
 
 # color by scheme and label
 COLOR_MAP = {}
-COLOR_MAP['1sttry'] = {
+COLOR_MAP['balanced'] = {
+    'MT': (0.736, 0.542, 0.328),
+    'LY': (0.796, 0.642, 0.452),
+    'SP': (0.950, 0.883, 0.601),
+    'ID': (0.990, 0.306, 0.280),
+    'NA': (0.237, 0.564, 0.880),
+    'HI': (0.380, 0.748, 0.898),
+    'IN': (0.362, 0.826, 0.282),
+    'OP': (0.810, 0.345, 0.603),
+    'IP': (0.982, 0.675, 0.196),
+    'no label': (0.591, 0.595, 0.605)
+}
+COLOR_MAP['bright'] = {
     'MT': (0.75, 0.50, 0.17),
     'LY': (0.5920891529639701, 0.6418467016378244, 0.1935069134991043),
     'SP': (0.9, 0.9, 0.9),
@@ -31,7 +43,7 @@ COLOR_MAP['1sttry'] = {
     'IP': (0.96484375, 0.72265625, 0.10546875),
     'no label': (0.5, 0.5, 0.5),
 }
-COLOR_MAP['t10like'] = {
+COLOR_MAP['pale'] = {
     "no label": "#AEB0B5",     # slightly more vibrant gray
     "MT": "#B8957C",           # slightly more vibrant brown
     "IP": "#FFA049",           # slightly more vibrant orange
