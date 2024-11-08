@@ -17,29 +17,38 @@ SECOND_LEVEL_RE = re.compile(r'^ +([A-Z]{2}, [a-z{}]+): ([0-9]+)')
 NO_REGISTER_RE = re.compile(r'.*?no register.*: ([0-9]+)')
 TOTAL_RE = re.compile(r'^TOTAL: ([0-9]+)')
 
-# color by label
-COLOR_MAP = {
+# color by scheme and label
+COLOR_MAP = {}
+COLOR_MAP['1sttry'] = {
     'MT': (0.75, 0.50, 0.17),
     'LY': (0.5920891529639701, 0.6418467016378244, 0.1935069134991043),
     'SP': (0.9, 0.9, 0.9),
-    #'ID': (0.9677975592919913, 0.44127456009157356, 0.5358103155058701),
     'ID': (0.98046875, 0.16015625, 0.10546875),
-    #'NA': (0.22335772267769388, 0.6565792317435265, 0.8171355503265633),
     'NA': (0.0625, 0.55078125, 0.99609375),
-    #'HI': (0.21044753832183283, 0.6773105080456748, 0.6433941168468681),
     'HI': (0.22265625, 0.66796875, 0.99609375),
-    #'IN': (0.19783576093349015, 0.6955516966063037, 0.3995301037444499),
     'IN': (0.32421875, 0.83203125, 0.16015625),
-    #'OP': (0.6423044349219739, 0.5497680051256467, 0.9582651433656727),
     'OP': (0.8046875, 0.0859375, 0.44921875),
-    #'IP': (1.0, 0.80, 0.23),
     'IP': (0.96484375, 0.72265625, 0.10546875),
     'no label': (0.5, 0.5, 0.5),
+}
+COLOR_MAP['t10like'] = {
+    "no label": "#AEB0B5",     # slightly more vibrant gray
+    "MT": "#B8957C",           # slightly more vibrant brown
+    "IP": "#FFA049",           # slightly more vibrant orange
+    "IN": "#66D167",           # slightly more vibrant green
+    "LY": "#FFA4B5",           # slightly more vibrant pink
+    "SP": "#FFDD4D",           # slightly more vibrant yellow
+    "ID": "#FF7374",           # slightly more vibrant red
+    "NA": "#6993C3",           # slightly more vibrant blue
+    "HI": "#89D3CC",           # slightly more vibrant teal
+    "OP": "#D09AC1"            # slightly more vibrant purple
 }
 
 
 def argparser():
     ap = ArgumentParser()
+    ap.add_argument('--color', choices=COLOR_MAP.keys(),
+                    default=next(iter(COLOR_MAP)))
     ap.add_argument('--title')
     ap.add_argument('--save')
     ap.add_argument('stats')
@@ -105,7 +114,7 @@ def main(argv):
 
     inner_labels = list(inner.keys())
     #inner_colors = sns.color_palette('Set2')
-    inner_colors = [COLOR_MAP[i] for i in inner_labels]
+    inner_colors = [COLOR_MAP[args.color][i] for i in inner_labels]
     outer_colors = [
         inner_colors[inner_labels.index(k.split(',')[0])]
         for k in outer.keys()
