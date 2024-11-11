@@ -16,6 +16,12 @@ fi
 PACKAGE="$1"
 get_lock "$PACKAGE"
 
+ID_PATH="$ID_BASE_DIR/${PACKAGE%%.*}.txt.zst"
+if [ -e "$ID_PATH" ]; then
+    echo "$ID_PATH exists, exiting." >&2
+    exit 1
+fi
+
 LOG_PATH="$LOG_BASE_DIR/${PACKAGE%%.*}.txt"
 mkdir -p $(dirname "$LOG_PATH")
 
