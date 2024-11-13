@@ -15,6 +15,7 @@ from collections import OrderedDict
 TOP_LEVEL_RE = re.compile(r'^([A-Z]{2}): ([0-9]+)')
 SECOND_LEVEL_RE = re.compile(r'^ +([A-Z]{2}, [a-z{}]+): ([0-9]+)')
 NO_REGISTER_RE = re.compile(r'.*?no register.*: ([0-9]+)')
+HYBRID_RE = re.compile(r'^.*?hybrid: ([0-9]+)')
 TOTAL_RE = re.compile(r'^TOTAL: ([0-9]+)')
 
 # color by scheme and label
@@ -29,7 +30,8 @@ COLOR_MAP['balanced'] = {
     'IN': (0.362, 0.826, 0.282),
     'OP': (0.810, 0.345, 0.603),
     'IP': (0.982, 0.675, 0.196),
-    'no label': (0.591, 0.595, 0.605)
+    'hybrid': (0, 0, 0),
+    'no label': (0.591, 0.595, 0.605),
 }
 COLOR_MAP['bright'] = {
     'MT': (0.75, 0.50, 0.17),
@@ -41,6 +43,7 @@ COLOR_MAP['bright'] = {
     'IN': (0.32421875, 0.83203125, 0.16015625),
     'OP': (0.8046875, 0.0859375, 0.44921875),
     'IP': (0.96484375, 0.72265625, 0.10546875),
+    'hybrid': (0, 0, 0),
     'no label': (0.5, 0.5, 0.5),
 }
 COLOR_MAP['pale'] = {
@@ -68,7 +71,7 @@ def argparser():
 
 
 def parse_stats(fn):
-    inner, outer, no_label = OrderedDict(), OrderedDict(), None
+    inner, outer, hybrid, no_label = OrderedDict(), OrderedDict(), 0, 0
     with open(fn) as f:
         for l in f:
             m = TOP_LEVEL_RE.search(l)
@@ -83,9 +86,14 @@ def parse_stats(fn):
                 assert label not in outer
                 outer[label] = int(count)
                 continue
+            m = HYBRID_RE.search(l)
+            if m:
+                assert hybrid == 0
+                hybrid = int(m.group(1))
+                continue
             m = NO_REGISTER_RE.search(l)
             if m:
-                assert no_label is None
+                assert no_label == 0
                 no_label = int(m.group(1))
                 continue
             m = TOTAL_RE.search(l)
@@ -93,7 +101,7 @@ def parse_stats(fn):
                 #print('total', m.groups())
                 continue
             raise ValueError(f'failed to parse line: {l}')
-    return inner, outer, no_label
+    return inner, outer, hybrid, no_label
 
 
 def add_labels(ax, wedges, labels, distance):
@@ -115,17 +123,18 @@ def add_labels(ax, wedges, labels, distance):
 def main(argv):
     args = argparser().parse_args(argv[1:])
 
-    inner, outer, no_label = parse_stats(args.stats)
+    inner, outer, hybrid, no_label = parse_stats(args.stats)
 
-    inner['no label'] = no_label
-    outer['no label'] = no_label
+    if hybrid > 0:
+        inner['hybrid'] = outer['hybrid'] = hybrid
+    if no_label > 0:
+        inner['no label'] = outer['no label'] = no_label
 
     assert sum(inner.values()) == sum(outer.values()), 'totals mismatch'
 
     fig, ax = plt.subplots(figsize=(8, 8))
 
     inner_labels = list(inner.keys())
-    #inner_colors = sns.color_palette('Set2')
     inner_colors = [COLOR_MAP[args.color][i] for i in inner_labels]
     outer_colors = [
         inner_colors[inner_labels.index(k.split(',')[0])]
