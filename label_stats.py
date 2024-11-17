@@ -25,12 +25,14 @@ LABEL_PARENT = {
     c: p for p, cs in LABEL_HIERARCHY.items() for c in cs
 }
 
+NO_LABEL = (None, None)    # key for docs with no label
+
+HYBRID_LABEL = ('hybrid', None)
+
 # Represent top-level label p as (p, None) and second-level label c
 # with parent p as (p, c) when taking counts.
 LABEL_MAP = { t: (t, None) for t in TOP_LEVEL_LABELS }
 LABEL_MAP.update({ c: (p, c) for c, p in LABEL_PARENT.items() })
-
-NO_LABEL = (None, None)    # key for docs with no label
 
 
 def argparser():
