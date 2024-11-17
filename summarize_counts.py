@@ -17,6 +17,7 @@ from label_stats import (
 
 def argparser():
     ap = ArgumentParser()
+    ap.add_argument('--threshold', default=None)
     ap.add_argument('json', nargs='+')
     return ap
 
@@ -64,7 +65,14 @@ def main(argv):
         else:
             return f'    {k[0]}, {k[1].strip("{}")}'
 
-    for threshold in sorted(totals.keys()):
+    if args.threshold:
+        if args.threshold not in totals:
+            raise ValueError(f'missing threshold {args.threshold}')
+        thresholds = [args.threshold]
+    else:
+        thresholds = sorted(totals.keys())
+
+    for threshold in thresholds:
         stats, total = summarize(totals[threshold], args)
 
         # For each top-level label p, fill in implicit "other" 2nd-level
@@ -76,7 +84,8 @@ def main(argv):
                 stats[(p, '{other}')] = parent_total - child_total
 
         keyf = lambda k: (k[0] or '~', k[1] or '')    # sort order for None
-        print(threshold)
+        if len(thresholds) > 1:
+            print(threshold)
         for k in sorted(stats.keys(), key=keyf):
             print(f'{label_string(k)}: {stats[k]} ({stats[k]/total:.1%})')
         print(f'TOTAL: {total}')
