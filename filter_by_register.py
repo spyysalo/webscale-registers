@@ -3,6 +3,8 @@
 import sys
 import json
 
+import zstandard as zstd
+
 from argparse import ArgumentParser
 
 from label_stats import assign_labels
@@ -17,9 +19,14 @@ def argparser():
     return ap
 
 
-def process(textl, labell, args):
-    textd = json.loads(textl)
-    labeld = json.loads(labell)
+def zopen(fn):
+    if fn.endswith('.zst'):
+        return zstd.open(fn, 'rt')
+    else:
+        return open(fn)
+
+
+def process(textd, labeld, args):
     assert textd['id'] == labeld['id'], 'id mismatch'
     probabilities = labeld['register_probabilities']
     labels = assign_labels(probabilities, args.threshold)
@@ -33,10 +40,15 @@ def main(argv):
     args = argparser().parse_args(argv[1:])
     args.registers = set(args.registers.split(','))
 
-    with open(args.textfile) as textf:
-        with open(args.labelfile) as labelf:
-            for textl, labell in zip(textf, labelf):
-                process(textl, labell, args)
+    with zopen(args.textfile) as textf:
+        with zopen(args.labelfile) as labelf:
+            for textl in textf:
+                textd = json.loads(textl)
+                for labell in labelf:
+                    labeld = json.loads(labell)
+                    if textd['id'] == labeld['id']:
+                        process(textd, labeld, args)
+                        break
 
 
 if __name__ == '__main__':
